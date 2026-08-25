@@ -1,0 +1,23 @@
+services:
+  ingestor:
+    build: .
+    image: camillia-monitor-ingestor:latest
+    container_name: camillia-monitor-ingestor
+    restart: unless-stopped
+    ports:
+      # Published on the host so nginx-proxy-manager on lucinda can reach it
+      # across the LAN. Nothing else on donut is using 3000.
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      DB_DRIVER: sqlite
+      SQLITE_DATABASE: /data/monitor.sqlite
+      # Read from the host environment or an adjacent .env file; deliberately
+      # not baked into the image or this file.
+      INGEST_API_KEYS: "${INGEST_API_KEYS:?INGEST_API_KEYS must be set}"
+    volumes:
+      - ingestor-data:/data
+
+volumes:
+  ingestor-data:
