@@ -58,11 +58,21 @@ export class MqttService {
   }
 
   async listChannels(): Promise<ChannelsResponse> {
-    const channels = await this.captures.channelTopicCounts();
+    const rows = await this.captures.channelTopicCounts();
+    const now = Date.now();
+
     return {
-      channels,
-      count: channels.length,
-      topics: channels.reduce((sum, c) => sum + c.topics, 0),
+      channels: rows.map((c) => ({
+        channel: c.channel,
+        topics: c.topics,
+        lastSeenAt: c.lastSeenAt.toISOString(),
+        // Clamped at zero: a row written a moment ago can carry a timestamp
+        // fractionally ahead of this read, and a negative age would render as
+        // activity in the future.
+        lastSeenAgeSeconds: Math.max(0, Math.round((now - c.lastSeenAt.getTime()) / 1000)),
+      })),
+      count: rows.length,
+      topics: rows.reduce((sum, c) => sum + c.topics, 0),
     };
   }
 

@@ -12,6 +12,20 @@ import {
 } from '../repositories';
 import { MqttCaptureEntity } from './entities/mqtt-capture.entity';
 
+/**
+ * Turns the driver's raw datetime text into a Date.
+ *
+ * TypeORM's better-sqlite3 driver writes datetimes as `YYYY-MM-DD HH:MM:SS.mmm`
+ * in UTC, with no zone marker. `new Date()` parses that shape as *local* time,
+ * so west of UTC every timestamp lands in the future and every age computed
+ * from it comes out negative. Entity-mapped reads are unaffected — TypeORM
+ * converts those itself — but a raw query returns the string untouched.
+ */
+function parseSqliteUtc(value: string | Date): Date {
+  if (value instanceof Date) return value;
+  return new Date(value.replace(' ', 'T') + 'Z');
+}
+
 @Injectable()
 export class SqliteMqttCaptureRepository implements MqttCaptureRepository {
   constructor(
@@ -39,11 +53,16 @@ export class SqliteMqttCaptureRepository implements MqttCaptureRepository {
       .createQueryBuilder('c')
       .select('c.channel', 'channel')
       .addSelect('COUNT(*)', 'topics')
+      .addSelect('MAX(c.last_seen_at)', 'lastSeenAt')
       .where('c.channel IS NOT NULL')
       .groupBy('c.channel')
       .orderBy('topics', 'DESC')
-      .getRawMany<{ channel: string; topics: number }>();
-    return rows.map((r) => ({ channel: r.channel, topics: Number(r.topics) }));
+      .getRawMany<{ channel: string; topics: number; lastSeenAt: string }>();
+    return rows.map((r) => ({
+      channel: r.channel,
+      topics: Number(r.topics),
+      lastSeenAt: parseSqliteUtc(r.lastSeenAt),
+    }));
   }
 
   async findRecent(query: MqttCapturesQuery): Promise<MqttCapture[]> {

@@ -30,6 +30,8 @@ export interface RecordCaptureResult {
 export interface ChannelTopicCount {
   channel: string;
   topics: number;
+  /** Most recent activity on the channel, across all its topics. */
+  lastSeenAt: Date;
 }
 
 export interface MqttCapturesQuery {

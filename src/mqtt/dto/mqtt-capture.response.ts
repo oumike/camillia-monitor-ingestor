@@ -57,6 +57,17 @@ export class ChannelTopicCountResponse {
 
   @ApiProperty({ example: 3, description: 'Distinct topics stored on this channel.' })
   topics!: number;
+
+  @ApiProperty({ example: '2026-08-24T20:47:39.000Z' })
+  lastSeenAt!: string;
+
+  @ApiProperty({
+    example: 42,
+    description:
+      'Seconds since the channel was last active, computed here. Returned alongside the ' +
+      'timestamp so a device with no date parsing — or no clock — can still judge recency.',
+  })
+  lastSeenAgeSeconds!: number;
 }
 
 export class ChannelsResponse {
