@@ -103,6 +103,12 @@ broadcast address `4294967295`, and any unrecognized field.
 plausible — Meshtastic clocks are often unset, so an out-of-range value falls
 back to arrival time. `lastHeardAt` never moves backwards.
 
+The response is the stored node plus two figures for the reporting device:
+`created` (true when this report is what brought the node into existence) and
+`totalNodes` (nodes stored, counted after the write — the same number
+`/api/nodes/count` returns). Together they let a device display both counts
+without keeping its own tally, which would miss what other monitors store.
+
 ## Authentication
 
 Write endpoints are guarded by an API key; reads are currently open.
@@ -145,6 +151,31 @@ and set `DB_DRIVER=mongodb`. No controller or service changes.
 
 `synchronize: true` is on for the SQLite datasource while the schema is young —
 replace it with migrations before this holds data worth keeping.
+
+### Resetting the store
+
+`synchronize` adds tables and columns but will not reliably reshape an existing
+SQLite table, so after an entity change the file on disk can disagree with the
+code in ways that only surface as a query error later. Until there are
+migrations, the fix is to start over:
+
+```bash
+npm run db:reset                 # local ./data store — prompts, backs up first
+npm run db:reset -- --container  # the running container's database
+npm run db:reset -- -y --no-backup
+```
+
+Both modes drop the database file (plus any `-wal`/`-shm`) and rebuild an empty
+schema from the current entities — locally via `scripts/rebuild-schema.ts`, and
+for the container by stopping it, wiping the file in its volume, and restarting
+so the service synchronises onto an empty one. `--container` checks that compose
+can resolve the service before it stops anything, and restarts the service if
+any later step fails, so a failed reset never leaves the deployment down. Set
+`STATUS_URL` if the API is not published on `http://127.0.0.1:3000`.
+
+A timestamped copy lands in `data/backups/` unless `--no-backup` is given.
+**Every stored node, message and MQTT capture is destroyed** — reporting devices
+reseed their totals from `/api/nodes/count` at their next boot.
 
 ## Configuration
 
