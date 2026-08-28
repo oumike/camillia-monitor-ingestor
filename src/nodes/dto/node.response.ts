@@ -131,11 +131,21 @@ export class RecordedNodeResponse extends HeardNodeResponse {
   @ApiProperty({
     example: false,
     description:
-      'True when this report created the node rather than updating one. Lets a reporting ' +
-      'device keep a running total of stored nodes without re-querying — it can otherwise ' +
-      'only tell that a node is new to itself.',
+      'True when this report created the node rather than updating one. Says whether the ' +
+      'report told the store something it did not already know — a reporting device can ' +
+      'otherwise only tell that a node is new to itself.',
   })
   created!: boolean;
+
+  @ApiProperty({
+    example: 42,
+    description:
+      'Nodes stored, counted after this report was applied — the same figure /nodes/count ' +
+      'returns. Sent on every write so a reporting device holds the store\'s own total ' +
+      'rather than a local approximation of it: fetching the count once at boot and adding ' +
+      'its own creations drifts as soon as a second device reports a node.',
+  })
+  totalNodes!: number;
 }
 
 export class NodeCountResponse {

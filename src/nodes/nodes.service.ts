@@ -58,7 +58,14 @@ export class NodesService {
     };
 
     const { node, created } = await this.nodes.recordHeard(report);
-    return { ...this.toResponse(node), created };
+
+    // The store's own total, counted after the write, travels back with every
+    // report. It is what the reporting device displays, so it must not be
+    // something the device derives: only the store can see the nodes other
+    // reporters have added since that device booted.
+    const totalNodes = await this.nodes.count();
+
+    return { ...this.toResponse(node), created, totalNodes };
   }
 
   /**
