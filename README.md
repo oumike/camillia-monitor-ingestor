@@ -57,6 +57,7 @@ Nodes heard, most recently heard first. Query params: `since` (ISO 8601) and
       "shortName": "RDGE",
       "hwModel": "HELTEC_V3",
       "role": "ROUTER",
+      "preset": "LongFast",
       "lastHeardAt": "2026-08-23T23:06:17.026Z",
       "lastHeardBy": "!075bcd15",
       "signal": { "snr": -3.25, "rssi": -88, "hopsAway": 2, "viaMqtt": false },
@@ -90,7 +91,7 @@ One reception report from the firmware. Only `nodeNum` is required:
 curl -X POST http://localhost:3000/api/nodes/heard \
   -H 'content-type: application/json' \
   -H 'x-api-key: YOUR_KEY' \
-  -d '{"nodeNum":123456789,"snr":-8.5,"rssi":-96,"hopsAway":2,"rxTime":1755990000}'
+  -d '{"nodeNum":123456789,"preset":"LongFast","snr":-8.5,"rssi":-96,"hopsAway":2,"rxTime":1755990000}'
 ```
 
 Upserts by node number and **merges**: fields left out keep their known values,
@@ -98,6 +99,13 @@ so a bare signal report will not erase names learned from an earlier NodeInfo.
 Field names follow the Meshtastic protobufs (`rxTime`, `latitudeI`, `snr`, …) so
 firmware can forward what it already holds. Rejected: node number `0` and the
 broadcast address `4294967295`, and any unrecognized field.
+
+`preset` is the canonical Meshtastic primary-channel name used when the packet
+was received: `LongFast`, `LongMod`, `LongSlow`, `LongTurbo`, `MediumFast`,
+`MediumSlow`, `ShortFast`, `ShortSlow`, or `ShortTurbo`. It is optional for
+compatibility with older monitor firmware. Nodes retain the preset from their
+latest report, and each stored message retains the preset on which its latest
+copy was received.
 
 `rxTime` (epoch seconds, the device's own clock) is used for `lastHeardAt` when
 plausible — Meshtastic clocks are often unset, so an out-of-range value falls

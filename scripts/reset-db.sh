@@ -39,6 +39,8 @@ done
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
+TS_NODE="$REPO_ROOT/node_modules/.bin/ts-node"
+
 STAMP="$(date +%Y%m%d-%H%M%S)"
 # Where the container publishes its API, polled after the restart. Override when
 # the compose port mapping is not the 3000:3000 this project ships with.
@@ -57,11 +59,17 @@ confirm() {
 
 # ── local ────────────────────────────────────────────────────────────────────
 reset_local() {
+    if [ ! -x "$TS_NODE" ] || [ ! -f "$REPO_ROOT/node_modules/typescript/lib/typescript.js" ]; then
+        echo "local TypeScript tooling is not installed." >&2
+        echo "Run 'npm ci --include=dev' in $REPO_ROOT, then try again." >&2
+        exit 1
+    fi
+
     # Asks the app's own config for the path rather than parsing .env here, so
     # SQLITE_DATABASE only ever means one thing.
     # tail -1 because dotenv announces itself on stdout before we print.
     local db
-    db="$(npx ts-node --project scripts/tsconfig.json scripts/rebuild-schema.ts --print-path | tail -n 1)"
+    db="$("$TS_NODE" --project scripts/tsconfig.json scripts/rebuild-schema.ts --print-path | tail -n 1)"
 
     echo "store:  $db"
     if [ -f "$db" ]; then
@@ -84,7 +92,7 @@ reset_local() {
     echo "erased."
 
     echo "rebuilding schema:"
-    npx ts-node --project scripts/tsconfig.json scripts/rebuild-schema.ts
+    "$TS_NODE" --project scripts/tsconfig.json scripts/rebuild-schema.ts
     echo "done. Start the service as usual."
 }
 

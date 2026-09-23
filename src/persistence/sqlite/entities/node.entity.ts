@@ -1,4 +1,5 @@
 import { Column, CreateDateColumn, Entity, Index, PrimaryColumn, UpdateDateColumn } from 'typeorm';
+import { MeshtasticPresetName } from '../../../meshtastic-presets';
 
 @Entity({ name: 'nodes' })
 export class NodeEntity {
@@ -34,6 +35,9 @@ export class NodeEntity {
 
   @Column({ type: 'text', name: 'role', nullable: true })
   role!: string | null;
+
+  @Column({ type: 'text', name: 'preset', nullable: true })
+  preset!: MeshtasticPresetName | null;
 
   @Index('idx_nodes_last_heard_at')
   @Column({ type: 'datetime', name: 'last_heard_at', nullable: true })

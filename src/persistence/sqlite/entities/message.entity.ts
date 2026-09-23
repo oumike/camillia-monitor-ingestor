@@ -1,4 +1,5 @@
 import { Column, CreateDateColumn, Entity, Index, PrimaryColumn, UpdateDateColumn } from 'typeorm';
+import { MeshtasticPresetName } from '../../../meshtastic-presets';
 
 @Entity({ name: 'messages' })
 export class MessageEntity {
@@ -27,6 +28,9 @@ export class MessageEntity {
 
   @Column({ type: 'boolean', name: 'broadcast', default: false })
   broadcast!: boolean;
+
+  @Column({ type: 'text', name: 'preset', nullable: true })
+  preset!: MeshtasticPresetName | null;
 
   @Column({ type: 'integer', name: 'portnum', nullable: true })
   portnum!: number | null;

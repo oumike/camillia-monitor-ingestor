@@ -1,3 +1,5 @@
+import { MeshtasticPresetName } from '../../meshtastic-presets';
+
 /**
  * Storage-agnostic view of a Meshtastic node as the service cares about it:
  * identity plus the most recent time we heard from it. Deliberately free of any
@@ -16,6 +18,8 @@ export interface MeshNode {
   /** Raw HardwareModel enum value, retained so a name can be resolved later. */
   hwModelNum: number | null;
   role: string | null;
+  /** Modem preset used for the most recent reported reception. */
+  preset: MeshtasticPresetName | null;
 
   /** When the node was last heard, per the reporting device. */
   lastHeardAt: Date | null;
@@ -54,6 +58,7 @@ export interface NodeHeardReport {
   hwModel?: string | null;
   hwModelNum?: number | null;
   role?: string | null;
+  preset?: MeshtasticPresetName | null;
   lastHeardAt: Date;
   lastHeardBy?: string | null;
   snr?: number | null;

@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { MESHTASTIC_PRESET_NAMES, MeshtasticPresetName } from '../../meshtastic-presets';
 
 export class NodePositionResponse {
   @ApiProperty({ type: Number, nullable: true, example: 37.1234567, description: 'Decimal degrees.' })
@@ -72,6 +73,13 @@ export class HeardNodeResponse {
   @ApiProperty({ type: String, nullable: true, example: 'ROUTER' })
   role!: string | null;
 
+  @ApiProperty({
+    enum: MESHTASTIC_PRESET_NAMES,
+    nullable: true,
+    example: 'LongFast',
+    description: 'Modem preset used for the most recent reported reception.',
+  })
+  preset!: MeshtasticPresetName | null;
 
   @ApiProperty({
     type: String,

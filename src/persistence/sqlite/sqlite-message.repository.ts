@@ -50,6 +50,7 @@ export class SqliteMessageRepository implements MessageRepository {
     if (report.heardAt > existing.heardAt) {
       existing.heardAt = report.heardAt;
       existing.heardBy = report.heardBy;
+      existing.preset = report.preset;
       existing.snr = report.snr;
       existing.rssi = report.rssi;
       existing.hopsAway = report.hopsAway;

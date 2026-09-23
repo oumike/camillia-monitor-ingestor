@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { MESHTASTIC_PRESET_NAMES, MeshtasticPresetName } from '../../meshtastic-presets';
 
 export class MessageResponse {
   @ApiProperty({ example: '!075bcd15:2864434397' })
@@ -21,6 +22,9 @@ export class MessageResponse {
 
   @ApiProperty({ example: true })
   broadcast!: boolean;
+
+  @ApiProperty({ enum: MESHTASTIC_PRESET_NAMES, nullable: true, example: 'LongFast' })
+  preset!: MeshtasticPresetName | null;
 
   @ApiProperty({ type: Number, nullable: true, example: 1 })
   portnum!: number | null;

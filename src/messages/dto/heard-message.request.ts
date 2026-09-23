@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsBoolean,
+  IsIn,
   IsInt,
   IsNumber,
   IsOptional,
@@ -9,6 +10,7 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
+import { MESHTASTIC_PRESET_NAMES, MeshtasticPresetName } from '../../meshtastic-presets';
 
 /**
  * One packet the firmware heard. Field names follow the Meshtastic protobufs so
@@ -26,6 +28,15 @@ export class HeardMessageRequest {
   @Min(0)
   @Max(0xffffffff)
   packetId!: number;
+
+  @ApiPropertyOptional({
+    enum: MESHTASTIC_PRESET_NAMES,
+    example: 'LongFast',
+    description: 'Modem preset on which the reporting monitor received this packet.',
+  })
+  @IsOptional()
+  @IsIn(MESHTASTIC_PRESET_NAMES)
+  preset?: MeshtasticPresetName;
 
   @ApiProperty({ example: 123456789, description: 'Sending node number.' })
   @IsInt()

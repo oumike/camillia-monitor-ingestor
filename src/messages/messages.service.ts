@@ -38,6 +38,7 @@ export class MessagesService {
       toNum: request.toNum,
       toId: toNodeId(request.toNum),
       broadcast: request.toNum === BROADCAST_NODE_NUM,
+      preset: request.preset ?? null,
 
       portnum: request.portnum ?? null,
       portName: request.portName ?? null,
@@ -105,6 +106,7 @@ export class MessagesService {
       toId: m.toId,
       toNum: m.toNum,
       broadcast: m.broadcast,
+      preset: m.preset,
       portnum: m.portnum,
       portName: m.portName,
       channel: m.channel,

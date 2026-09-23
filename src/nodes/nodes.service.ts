@@ -43,6 +43,7 @@ export class NodesService {
       hwModel: this.resolveHwModel(request),
       hwModelNum: request.hwModelNum,
       role: request.role,
+      preset: request.preset,
       lastHeardAt: this.resolveHeardAt(request),
       lastHeardBy: request.heardBy,
       snr: request.snr,
@@ -156,6 +157,7 @@ export class NodesService {
       hwModel: node.hwModel,
       hwModelNum: node.hwModelNum,
       role: node.role,
+      preset: node.preset,
       lastHeardAt: node.lastHeardAt?.toISOString() ?? null,
       lastHeardBy: node.lastHeardBy,
       signal: {

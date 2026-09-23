@@ -1,3 +1,5 @@
+import { MeshtasticPresetName } from '../../meshtastic-presets';
+
 /**
  * One packet the firmware heard on the air.
  *
@@ -20,6 +22,8 @@ export interface MeshMessage {
   toId: string;
   /** Addressed to everyone rather than to one node. */
   broadcast: boolean;
+  /** Modem preset on which the latest copy was received. */
+  preset: MeshtasticPresetName | null;
 
   /** Meshtastic port number, and its enum name when known. */
   portnum: number | null;
